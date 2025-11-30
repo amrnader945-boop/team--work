@@ -1,44 +1,60 @@
-<!-- public/patient.html -->
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>AMR LAB — Patient Results</title>
+<meta charset="UTF-8">
+<title>AMR LAB — Patient Report</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- Google Font -->
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
 <link rel="stylesheet" href="style.css">
 </head>
-<body>
-  <div class="result-wrap">
-    <div class="result-card">
-      <h2 id="lab-title">AMR LAB - Patient Report</h2>
-      <div class="info">
-        <div><strong>ID:</strong> <span id="p-id"></span></div>
-        <div><strong>Name:</strong> <span id="p-name"></span></div>
-        <div><strong>Age:</strong> <span id="p-age"></span></div>
-        <div><strong>Gender:</strong> <span id="p-gender"></span></div>
-        <div><strong>Doctor:</strong> <span id="p-doctor"></span></div>
-        <div><strong>Phone:</strong> <span id="p-phone"></span></div>
-        <div><strong>Email:</strong> <span id="p-email"></span></div>
-      </div>
 
-      <h3>Test Results</h3>
-      <table id="results-table">
-        <tr><td>ABS</td><td id="r-abs">--</td></tr>
-        <tr><td>CONC</td><td id="r-conc">--</td></tr>
-        <tr><td>TRANS</td><td id="r-trans">--</td></tr>
-      </table>
+<body class="patient-body">
 
-      <div class="actions">
-        <a id="whatsappBtn" class="btn whatsapp" target="_blank">Send Link via WhatsApp</a>
-        <button id="simulateButton" class="btn">Simulate Arduino Update</button>
-      </div>
+<div class="report-container">
+
+    <div class="card header-card">
+        <h1>🧪 AMR LAB</h1>
+        <p>Patient Laboratory Report</p>
     </div>
-  </div>
+
+    <div class="card patient-card">
+        <h2>👤 Patient Information</h2>
+
+        <div class="info-grid">
+            <div><strong>ID:</strong> <span id="p-id"></span></div>
+            <div><strong>Name:</strong> <span id="p-name"></span></div>
+            <div><strong>Age:</strong> <span id="p-age"></span></div>
+            <div><strong>Gender:</strong> <span id="p-gender"></span></div>
+            <div><strong>Doctor:</strong> <span id="p-doctor"></span></div>
+            <div><strong>Phone:</strong> <span id="p-phone"></span></div>
+            <div><strong>Email:</strong> <span id="p-email"></span></div>
+        </div>
+    </div>
+
+    <div class="card results-card">
+        <h2>📊 Test Results</h2>
+
+        <table class="results-table">
+            <tr><th>Test</th><th>Value</th></tr>
+            <tr><td>ABS</td><td id="r-abs">--</td></tr>
+            <tr><td>CONC</td><td id="r-conc">--</td></tr>
+            <tr><td>TRANS</td><td id="r-trans">--</td></tr>
+        </table>
+    </div>
+
+    <div class="actions">
+        <a id="whatsappBtn" class="btn whatsapp" target="_blank">📩 Send Results via WhatsApp</a>
+        <button id="simulateButton" class="btn simulate">⚙️ Simulate Arduino Update</button>
+    </div>
+
+</div>
 
 <script>
-  // when page loads, try to get id from query or localStorage
   const params = new URLSearchParams(location.search);
-  const id = params.get('id');
+  const id = params.get("id");
 
   function showData(patientId, patient) {
     document.getElementById('p-id').innerText = patientId;
@@ -48,59 +64,65 @@
     document.getElementById('p-doctor').innerText = patient.doctor;
     document.getElementById('p-phone').innerText = patient.phone;
     document.getElementById('p-email').innerText = patient.email;
-    const r = patient.results || {};
-    document.getElementById('r-abs').innerText = r.ABS ?? '--';
-    document.getElementById('r-conc').innerText = r.CONC ?? '--';
-    document.getElementById('r-trans').innerText = r.TRANS ?? '--';
 
-    // whatsapp button
+    const r = patient.results || {};
+    document.getElementById('r-abs').innerText = r.ABS ?? "--";
+    document.getElementById('r-conc').innerText = r.CONC ?? "--";
+    document.getElementById('r-trans').innerText = r.TRANS ?? "--";
+
+    // WhatsApp link
     const link = `${location.origin}/patient.html?id=${patientId}`;
-    document.getElementById('whatsappBtn').href = `https://wa.me/${patient.phone.replace('+','')}?text=${encodeURIComponent('Your results: '+link)}`;
+    document.getElementById("whatsappBtn").href =
+      `https://wa.me/${patient.phone.replace('+','')}?text=` +
+      encodeURIComponent(`Your results are ready:\n${link}`);
   }
 
+  // load patient
   if (id) {
     fetch(`/patients/${id}`)
-      .then(r=>r.json()).then(json=>{
-        if (json.success) showData(id, json.patient);
-        else alert('Patient not found');
-      }).catch(e=>{ console.error(e); alert('Error loading'); });
+      .then(r => r.json())
+      .then(j => {
+        if (j.success) showData(id, j.patient);
+        else alert("Patient not found");
+      })
+      .catch(err => alert("Error loading data."));
   } else {
-    // try from localStorage (login flow)
-    const raw = localStorage.getItem('patientData');
+    const raw = localStorage.getItem("patientData");
     if (raw) {
-      const patient = JSON.parse(raw);
-      showData(patient.id || 'local', patient);
+      const p = JSON.parse(raw);
+      showData(p.id || "local", p);
     } else {
-      alert('No patient selected. Go to login page.');
-      window.location.href = '/';
+      alert("No patient selected");
+      location.href = "/";
     }
   }
 
-  // simulate Arduino: open a small POST to /arduino-update to update results
-  document.getElementById('simulateButton').addEventListener('click', () => {
-    const patientId = id || (JSON.parse(localStorage.getItem('patientData')||'{}').id);
-    if (!patientId) return alert('No patient ID');
+  // simulate Arduino POST
+  document.getElementById("simulateButton").addEventListener("click", () => {
+    const patientId = id || JSON.parse(localStorage.getItem("patientData")||"{}").id;
+    if (!patientId) return alert("Missing ID");
 
     const newResults = {
-      ABS: Math.floor(10 + Math.random()*10),
-      CONC: Math.floor(120 + Math.random()*80),
-      TRANS: Math.floor(15 + Math.random()*12)
+      ABS: Math.floor(10 + Math.random()*20),
+      CONC: Math.floor(120 + Math.random()*90),
+      TRANS: Math.floor(10 + Math.random()*10)
     };
 
-    fetch('/arduino-update', {
-      method: 'POST',
-      headers: {'Content-Type':'application/json'},
+    fetch("/arduino-update", {
+      method: "POST",
+      headers: {"Content-Type":"application/json"},
       body: JSON.stringify({ id: patientId, results: newResults })
     })
-    .then(r=>r.json())
-    .then(j=>{
+    .then(r => r.json())
+    .then(j => {
       if (j.success) {
-        alert('Arduino update sent. WhatsApp (if configured) will be sent');
-        // refresh
+        alert("Arduino update sent successfully!");
         location.reload();
-      } else alert('Update failed');
-    }).catch(e=>{ console.error(e); alert('Error'); });
+      } else alert("Update failed");
+    })
+    .catch(e => alert("Connection error"));
   });
 </script>
+
 </body>
 </html>
