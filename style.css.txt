@@ -1,0 +1,45 @@
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: url("https://i.imgur.com/FyH3Qiz.jpeg") no-repeat center/cover;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.card {
+    width: 340px;
+    background: rgba(255,255,255,0.15);
+    backdrop-filter: blur(14px);
+    border-radius: 18px;
+    padding: 20px;
+    color: white;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+}
+
+.row {
+    display: flex;
+    justify-content: space-between;
+    padding: 6px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.2);
+}
+
+.wa-btn {
+    position: fixed;
+    right: 18px;
+    bottom: 18px;
+    background: #25D366;
+    width: 150px;
+    padding: 12px;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 15px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.wa-btn:hover {
+    transform: scale(1.1);
+}

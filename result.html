@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>AMR LAB — Patient Result</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+body {
+    margin: 0;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(135deg, #05182F, #083B70, #0ABAB5);
+    font-family: 'Arial';
+}
+
+.card {
+    width: 420px;
+    padding: 30px;
+    background: rgba(255,255,255,0.10);
+    border-radius: 18px;
+    backdrop-filter: blur(12px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+    color: white;
+    animation: fadeIn 0.9s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.row {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.2);
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+</style>
+</head>
+<body>
+
+<div class="card" id="card" style="display:none;">
+
+    <h1 id="pname"></h1>
+
+    <div class="row"><span>ID</span><span id="pid"></span></div>
+    <div class="row"><span>Age</span><span id="age"></span></div>
+    <div class="row"><span>Gender</span><span id="gender"></span></div>
+    <div class="row"><span>Doctor</span><span id="doctor"></span></div>
+    <div class="row"><span>Phone</span><span id="phone"></span></div>
+    <div class="row"><span>Email</span><span id="email"></span></div>
+
+    <h3 style="margin-top:20px;">Test Results</h3>
+    <div class="row"><span>ABS</span><span id="abs"></span></div>
+    <div class="row"><span>CONC</span><span id="conc"></span></div>
+    <div class="row"><span>TRANS</span><span id="trans"></span></div>
+
+</div>
+
+<script>
+(async () => {
+    const id = localStorage.getItem("patientID");
+
+    if (!id) {
+        alert("No patient ID detected");
+        window.location.href = "index.html";
+        return;
+    }
+
+    const response = await fetch("data/patients.json");
+    const data = await response.json();
+
+    if (!data[id]) {
+        alert("Patient Not Found");
+        window.location.href = "index.html";
+        return;
+    }
+
+    const p = data[id];
+
+    document.getElementById("card").style.display = "block";
+
+    document.getElementById("pname").innerText = p.name;
+    document.getElementById("pid").innerText = id;
+    document.getElementById("age").innerText = p.age;
+    document.getElementById("gender").innerText = p.gender;
+    document.getElementById("doctor").innerText = p.doctor;
+    document.getElementById("phone").innerText = p.phone;
+    document.getElementById("email").innerText = p.email;
+
+    document.getElementById("abs").innerText = p.results.ABS;
+    document.getElementById("conc").innerText = p.results.CONC;
+    document.getElementById("trans").innerText = p.results.TRANS;
+})();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>AMR LAB - Admin Panel</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+    body {
+        background: #0a0f24;
+        color: white;
+        font-family: Arial;
+        padding: 30px;
+    }
+
+    h1 { text-align: center; margin-bottom: 25px; }
+
+    .container {
+        max-width: 700px;
+        margin: auto;
+        background: rgba(255,255,255,0.06);
+        padding: 25px;
+        border-radius: 12px;
+        backdrop-filter: blur(10px);
+        box-shadow: 0 0 20px rgba(0,0,0,0.5);
+    }
+
+    input {
+        width: 100%;
+        padding: 10px;
+        margin: 8px 0;
+        border-radius: 8px;
+        border: none;
+        background: rgba(255,255,255,0.15);
+        color: white;
+    }
+
+    button {
+        width: 100%;
+        padding: 12px;
+        background: #0099cc;
+        border: none;
+        border-radius: 10px;
+        margin-top: 10px;
+        cursor: pointer;
+        color: white;
+        font-size: 16px;
+        transition: 0.3s;
+    }
+
+    button:hover { background: #00b7ff; }
+
+    .patient-list {
+        margin-top: 20px;
+        padding: 10px;
+        background: rgba(255,255,255,0.1);
+        border-radius: 10px;
+        max-height: 300px;
+        overflow-y: auto;
+    }
+
+    .row {
+        padding: 8px;
+        border-bottom: 1px solid rgba(255,255,255,0.2);
+    }
+</style>
+
+</head>
+<body>
+
+<h1>AMR LAB — Admin Panel</h1>
+
+<div class="container">
+    <h2>Add / Edit Patient</h2>
+
+    <input id="id" placeholder="Patient ID">
+    <input id="name" placeholder="Name">
+    <input id="phone" placeholder="Phone">
+    <input id="abs" placeholder="ABS">
+    <input id="conc" placeholder="CONC">
+    <input id="trans" placeholder="TRANS">
+
+    <button onclick="savePatient()">💾 Save Patient</button>
+    <button onclick="deletePatient()" style="background:#cc0033;">🗑 Delete Patient</button>
+
+    <h2 style="margin-top:30px;">All Patients</h2>
+    <div id="list" class="patient-list"></div>
+</div>
+
+<script>
+async function refreshList() {
+    const res = await fetch("/patients/list");
+    const data = await res.json();
+
+    let html = "";
+    data.forEach(p => {
+        html += `<div class="row">${p.id} — ${p.name} — ${p.phone}</div>`;
+    });
+    document.getElementById("list").innerHTML = html;
+}
+
+async function savePatient() {
+    const body = {
+        id: id.value,
+        name: name.value,
+        phone: phone.value,
+        abs: abs.value,
+        conc: conc.value,
+        trans: trans.value
+    };
+
+    await fetch("/patients/add", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body)
+    });
+
+    alert("✔ Saved!");
+    refreshList();
+}
+
+async function deletePatient() {
+    const pid = id.value;
+    await fetch("/patients/delete", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: pid })
+    });
+
+    alert("🗑 Deleted!");
+    refreshList();
+}
+
+refreshList();
+</script>
+
+</body>
+</html>
