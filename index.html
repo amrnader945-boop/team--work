@@ -1,26 +1,120 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>AMR LAB — Patient Login</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>AMR LAB — Login</title>
 
-<link rel="stylesheet" href="style.css">
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
 
+    body {
+        margin: 0;
+        font-family: 'Poppins', sans-serif;
+        background: radial-gradient(circle at top, #0a1e3f, #071426);
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .container {
+        width: 380px;
+        background: rgba(255,255,255,0.08);
+        backdrop-filter: blur(20px);
+        padding: 35px;
+        border-radius: 22px;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+        animation: fadeIn .9s ease-in-out;
+        border: 1px solid rgba(255,255,255,0.15);
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: scale(.92);}
+        to { opacity: 1; transform: scale(1);}
+    }
+
+    h2 {
+        text-align: center;
+        color: white;
+        margin-bottom: 25px;
+        font-weight: 600;
+        letter-spacing: 1px;
+    }
+
+    input {
+        width: 100%;
+        padding: 14px;
+        margin-bottom: 18px;
+        border: none;
+        border-radius: 12px;
+        background: rgba(255,255,255,0.15);
+        color: white;
+        font-size: 15px;
+        outline: none;
+        transition: .3s;
+    }
+
+    input:focus {
+        background: rgba(255,255,255,0.25);
+        transform: translateY(-2px);
+    }
+
+    button {
+        width: 100%;
+        padding: 14px;
+        background: linear-gradient(135deg,#21e6c1,#19c5a2);
+        border: none;
+        border-radius: 14px;
+        color: black;
+        font-size: 16px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: .3s;
+    }
+
+    button:hover {
+        transform: scale(1.05);
+        background: linear-gradient(135deg,#19c5a2,#21e6c1);
+    }
+</style>
 </head>
 
 <body>
+<div class="container">
+    <h2>AMR LAB</h2>
 
-<div class="box">
-    <h1>AMR LAB</h1>
+    <input type="text" id="name" placeholder="Patient Name" />
+    <input type="number" id="id" placeholder="Patient ID" />
 
-    <input type="text" id="name" placeholder="Enter Patient Name">
-    <input type="number" id="id" placeholder="Enter Patient ID">
-
-    <button id="loginBtn">View My Results</button>
+    <button onclick="login()">View My Results</button>
 </div>
 
-<script src="script.js"></script>
+<script>
+function login() {
+    const name = document.getElementById("name").value.trim();
+    const id = document.getElementById("id").value.trim();
+
+    if (!name || !id) {
+        alert("Please fill both fields");
+        return;
+    }
+
+    fetch("https://raw.githubusercontent.com/amrnader945-boop/team--work/main/data/patients.json")
+        .then(res => res.json())
+        .then(data => {
+            if (!data[id]) return alert("Wrong name or ID");
+
+            if (data[id].name.toLowerCase() === name.toLowerCase()) {
+                localStorage.setItem("patientData", JSON.stringify(data[id]));
+                window.location.href = "patient.html";
+            } else {
+                alert("Wrong name or ID");
+            }
+        })
+        .catch(() => alert("Error loading data"));
+}
+</script>
 
 </body>
 </html>
