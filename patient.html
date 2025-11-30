@@ -1,104 +1,154 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta charset="UTF-8">
 <title>AMR LAB — Patient Report</title>
-<link rel="stylesheet" href="style.css">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+
+    body {
+        margin: 0;
+        font-family: 'Poppins', sans-serif;
+        background: radial-gradient(circle at top, #0b1d3a, #061426);
+        min-height: 100vh;
+        padding: 20px;
+        color: white;
+    }
+
+    .container {
+        max-width: 700px;
+        margin: auto;
+        background: rgba(255,255,255,0.08);
+        padding: 25px;
+        border-radius: 20px;
+        backdrop-filter: blur(14px);
+        box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+        animation: fadeIn .8s ease;
+        border: 1px solid rgba(255,255,255,0.15);
+    }
+
+    @keyframes fadeIn {
+        from {opacity:0; transform: translateY(30px);}
+        to {opacity:1; transform: translateY(0);}
+    }
+
+    h1 {
+        text-align: center;
+        font-weight: 600;
+        margin-bottom: 25px;
+    }
+
+    .section-title {
+        font-size: 18px;
+        font-weight: 600;
+        margin: 15px 0 8px;
+        border-left: 4px solid #21e6c1;
+        padding-left: 8px;
+    }
+
+    .row {
+        display: flex;
+        justify-content: space-between;
+        padding: 8px 0;
+        border-bottom: 1px solid rgba(255,255,255,0.15);
+    }
+
+    .value {
+        font-weight: 600;
+    }
+
+    /* Floating WhatsApp Button */
+    #wa-btn {
+        position: fixed;
+        right: 20px;
+        bottom: 20px;
+        background: #25D366;
+        border: none;
+        padding: 15px 20px;
+        border-radius: 50px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: white;
+        font-weight: bold;
+        cursor: pointer;
+        font-size: 15px;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+        transition: .3s;
+    }
+
+    #wa-btn:hover {
+        transform: scale(1.08);
+    }
+
+    #wa-btn img {
+        width: 22px;
+    }
+</style>
 </head>
+
 <body>
-  <main class="center-card">
-    <div class="card report" id="reportCard" aria-live="polite">
-      <div class="header">
-        <div>
-          <h2 id="labTitle">AMR LAB</h2>
-          <p class="muted">Patient Report</p>
-        </div>
-        <div class="logo">🏥</div>
-      </div>
 
-      <div class="info">
-        <div class="row"><span>ID</span><strong id="p_id">—</strong></div>
-        <div class="row"><span>Name</span><strong id="p_name">—</strong></div>
-        <div class="row"><span>Age</span><strong id="p_age">—</strong></div>
-        <div class="row"><span>Gender</span><strong id="p_gender">—</strong></div>
-        <div class="row"><span>Clinic</span><strong id="p_clinic">—</strong></div>
-        <div class="row"><span>Doctor</span><strong id="p_doctor">—</strong></div>
-        <div class="row"><span>Phone</span><strong id="p_phone">—</strong></div>
-        <div class="row"><span>Email</span><strong id="p_email">—</strong></div>
-      </div>
+<div class="container">
+    <h1>AMR LAB — Patient Report</h1>
 
-      <h3 class="results-title">Test Results</h3>
-      <div class="tests">
-        <div class="row"><span>ABS</span><strong id="p_abs">—</strong></div>
-        <div class="row"><span>CONC</span><strong id="p_conc">—</strong></div>
-        <div class="row"><span>TRANS</span><strong id="p_trans">—</strong></div>
-      </div>
+    <div class="section-title">Patient Information</div>
+    <div class="row"><span>Name</span> <span class="value" id="pName">-</span></div>
+    <div class="row"><span>ID</span> <span class="value" id="pID">-</span></div>
+    <div class="row"><span>Doctor</span> <span class="value" id="pDoctor">-</span></div>
+    <div class="row"><span>Phone</span> <span class="value" id="pPhone">-</span></div>
+    <div class="row"><span>Email</span> <span class="value" id="pEmail">-</span></div>
 
-      <div class="actions">
-        <a id="whatsappBtn" class="btn whatsapp" target="_blank" rel="noopener noreferrer">
-          <img src="https://cdn-icons-png.flaticon.com/512/733/733585.png" width="20" alt=""> WhatsApp
-        </a>
+    <div class="section-title">Test Results</div>
+    <div class="row"><span>ABS</span> <span class="value" id="abs">-</span></div>
+    <div class="row"><span>CONC</span> <span class="value" id="conc">-</span></div>
+    <div class="row"><span>TRANS</span> <span class="value" id="trans">-</span></div>
+</div>
 
-        <a id="smsBtn" class="btn sms" target="_blank" rel="noopener noreferrer">
-          <img src="https://cdn-icons-png.flaticon.com/512/732/732200.png" width="20" alt=""> Send SMS
-        </a>
-
-        <button id="backBtn" class="btn ghost">Back to Login</button>
-      </div>
-    </div>
-  </main>
+<button id="wa-btn">
+    <img src="https://cdn-icons-png.flaticon.com/512/733/733585.png">
+    Send via WhatsApp
+</button>
 
 <script>
-// read patient data from localStorage
-(function() {
-  const patientJSON = localStorage.getItem('patientData');
-  if (!patientJSON) {
-    // if no data -> redirect to login
+// ==========================
+// LOAD PATIENT DATA
+// ==========================
+const data = JSON.parse(localStorage.getItem("patientData"));
+
+// لو مفيش داتا يرجعه للصفحه القديمة
+if (!data) {
+    alert("No Data Found — Please Login Again");
     window.location.href = "index.html";
-    return;
-  }
+}
 
-  const patient = JSON.parse(patientJSON);
+// Fill Data
+document.getElementById("pName").innerText = data.name;
+document.getElementById("pID").innerText = data.id;
+document.getElementById("pDoctor").innerText = data.doctor || "Unknown";
+document.getElementById("pPhone").innerText = data.phone;
+document.getElementById("pEmail").innerText = data.email || "N/A";
 
-  // populate fields
-  document.getElementById('p_id').innerText = patient.id || '';
-  document.getElementById('p_name').innerText = patient.name || '';
-  document.getElementById('p_age').innerText = patient.age || '';
-  document.getElementById('p_gender').innerText = patient.gender || '';
-  document.getElementById('p_clinic').innerText = patient.clinic || '';
-  document.getElementById('p_doctor').innerText = patient.doctor || '';
-  document.getElementById('p_phone').innerText = patient.phone || '';
-  document.getElementById('p_email').innerText = patient.email || '';
+document.getElementById("abs").innerText = data.ABS;
+document.getElementById("conc").innerText = data.CONC;
+document.getElementById("trans").innerText = data.TRANS;
 
-  document.getElementById('p_abs').innerText = patient.abs ?? '—';
-  document.getElementById('p_conc').innerText = patient.conc ?? '—';
-  document.getElementById('p_trans').innerText = patient.trans ?? '—';
+// ==========================
+// SEND WHATSAPP BUTTON
+// ==========================
+document.getElementById("wa-btn").addEventListener("click", () => {
+    const link = "https://amrnader945-boop.github.io/team--work/patient.html?id=" + data.id;
 
-  // prepare links
-  const siteRoot = window.location.origin + window.location.pathname.replace(/\/[^/]*$/, '/') ; // folder path
-  const patientLink = siteRoot + "patient.html"; // link to the page itself (or you can point to index + query)
+    const msg =
+`Hello ${data.name},
+Your lab results are ready.
+Click here to view: ${link}`;
 
-  const phone = (patient.phone || '').replace(/\s+/g, '');
-  // WhatsApp: use wa.me with phone in international format (no plus)
-  const waNumber = phone.replace('+','');
-  const waText = encodeURIComponent(`Hello ${patient.name}, your lab results are ready. View: ${siteRoot}`);
-  document.getElementById('whatsappBtn').href = `https://wa.me/${waNumber}?text=${waText}`;
-
-  // SMS: use sms: scheme — on mobile this opens SMS app
-  const smsText = encodeURIComponent(`Your lab results are ready. View: ${siteRoot}`);
-  if (phone) {
-    document.getElementById('smsBtn').href = `sms:${phone}?body=${smsText}`;
-  } else {
-    // hide if no phone
-    document.getElementById('smsBtn').style.display = 'none';
-  }
-
-  document.getElementById('backBtn').addEventListener('click', () => {
-    localStorage.removeItem('patientData'); // optional: clear session
-    window.location.href = "index.html";
-  });
-})();
+    window.open(`https://wa.me/${data.phone}?text=${encodeURIComponent(msg)}`);
+});
 </script>
+
 </body>
 </html>
