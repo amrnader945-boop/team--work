@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>AMR LAB — Patient Login</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+    body {
+        margin: 0;
+        font-family: Poppins, Arial, sans-serif;
+        background: linear-gradient(135deg,#071e3d,#1f4287,#278ea5);
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: white;
+    }
+
+    .box {
+        width: 360px;
+        padding: 30px;
+        background: rgba(255,255,255,0.12);
+        backdrop-filter: blur(14px);
+        border-radius: 20px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        animation: fadeIn 1s ease;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(40px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    h1 {
+        text-align: center;
+        margin-bottom: 25px;
+        letter-spacing: 1px;
+    }
+
+    input {
+        width: 100%;
+        padding: 14px;
+        border: none;
+        border-radius: 12px;
+        margin-bottom: 18px;
+        font-size: 15px;
+        outline: none;
+        background: rgba(255,255,255,0.18);
+        color: white;
+    }
+
+    button {
+        width: 100%;
+        padding: 14px;
+        border: none;
+        border-radius: 12px;
+        background: #21e6c1;
+        color: black;
+        font-weight: bold;
+        cursor: pointer;
+        transition: 0.3s;
+        font-size: 16px;
+    }
+
+    button:hover {
+        background: #1dbda0;
+        transform: scale(1.05);
+    }
+</style>
+</head>
+
+<body>
+
+<div class="box">
+    <h1>AMR LAB</h1>
+
+    <input type="text" id="name" placeholder="Enter Patient Name">
+    <input type="number" id="id" placeholder="Enter Patient ID">
+
+    <button onclick="login()">View My Results</button>
+</div>
+
+<script>
+function login() {
+    const name = document.getElementById("name").value.trim();
+    const id = document.getElementById("id").value.trim();
+
+    if (!name || !id) return alert("Please fill both fields");
+
+    fetch("/patients/get", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({ name, id })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (!data.success) return alert("Wrong name or ID");
+        window.location.href = `/result.html?id=${id}`;
+    });
+}
+</script>
+
+</body>
+</html>
