@@ -2,33 +2,89 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>AMR LAB - Patient Report</title>
-<link rel="stylesheet" href="style.css">
+<title>Patient Results</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+    body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background: linear-gradient(to bottom right, #0a2342, #2e8bc0);
+        color: white;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+    }
+
+    .card {
+        width: 350px;
+        background: rgba(255, 255, 255, 0.15);
+        padding: 20px;
+        border-radius: 15px;
+        backdrop-filter: blur(10px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    h2 {
+        text-align: center;
+        margin-bottom: 15px;
+    }
+
+    .row {
+        display: flex;
+        justify-content: space-between;
+        margin: 6px 0;
+        padding-bottom: 4px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    }
+</style>
 </head>
 <body>
 
 <div class="card">
-    <h1 id="lab-name">AMR LAB</h1>
+    <h2>Patient Results</h2>
 
-    <div class="row"><span>ID</span><span id="id"></span></div>
-    <div class="row"><span>Name</span><span id="name"></span></div>
-    <div class="row"><span>Age</span><span id="age"></span></div>
-    <div class="row"><span>Gender</span><span id="gender"></span></div>
-    <div class="row"><span>Clinic</span><span id="clinic"></span></div>
-    <div class="row"><span>Doctor</span><span id="doctor"></span></div>
-    <div class="row"><span>Phone</span><span id="phone"></span></div>
+    <div class="row"><span>Name</span> <span id="pName"></span></div>
+    <div class="row"><span>Age</span> <span id="pAge"></span></div>
+    <div class="row"><span>Gender</span> <span id="pGender"></span></div>
+    <div class="row"><span>Clinic</span> <span id="pClinic"></span></div>
+    <div class="row"><span>Doctor</span> <span id="pDoctor"></span></div>
+    <div class="row"><span>Phone</span> <span id="pPhone"></span></div>
+    <div class="row"><span>Email</span> <span id="pEmail"></span></div>
 
-    <h3>Test Results</h3>
-    <div class="row"><span>ABS</span><span id="abs"></span></div>
-    <div class="row"><span>CONC</span><span id="conc"></span></div>
-    <div class="row"><span>TRANS</span><span id="trans"></span></div>
+    <br>
+    <h3 style="text-align:center;margin-bottom:8px;">Test Results</h3>
+
+    <div class="row"><span>ABS</span> <span id="pAbs"></span></div>
+    <div class="row"><span>CONC</span> <span id="pConc"></span></div>
+    <div class="row"><span>TRANS</span> <span id="pTrans"></span></div>
 </div>
 
-<!-- WhatsApp Floating Button -->
-<button id="sendWA" class="wa-btn">
-    Send via WhatsApp
-</button>
+<script>
+// ----- اقرأ البيانات من localStorage -----
+const data = localStorage.getItem("patientData");
 
-<script src="script.js"></script>
+if (!data) {
+    alert("No patient data found. Please login again.");
+    window.location.href = "index.html";
+}
+
+const patient = JSON.parse(data);
+
+// ----- حط البيانات في الصفحة -----
+document.getElementById("pName").innerText = patient.name;
+document.getElementById("pAge").innerText = patient.age;
+document.getElementById("pGender").innerText = patient.gender;
+document.getElementById("pClinic").innerText = patient.clinic;
+document.getElementById("pDoctor").innerText = patient.doctor;
+document.getElementById("pPhone").innerText = patient.phone;
+document.getElementById("pEmail").innerText = patient.email;
+
+document.getElementById("pAbs").innerText = patient.abs;
+document.getElementById("pConc").innerText = patient.conc;
+document.getElementById("pTrans").innerText = patient.trans;
+</script>
+
 </body>
 </html>
