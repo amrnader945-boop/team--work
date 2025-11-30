@@ -1,91 +1,82 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>AMR LAB — Login</title>
+<meta charset="UTF-8">
+<title>AMR LAB — Patient Login</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
-
     body {
         margin: 0;
-        font-family: 'Poppins', sans-serif;
-        background: radial-gradient(circle at top, #0a1e3f, #071426);
+        font-family: Poppins, Arial, sans-serif;
+        background: linear-gradient(135deg,#071e3d,#1f4287,#278ea5);
         height: 100vh;
         display: flex;
         justify-content: center;
         align-items: center;
+        color: white;
     }
 
-    .container {
-        width: 380px;
-        background: rgba(255,255,255,0.08);
-        backdrop-filter: blur(20px);
-        padding: 35px;
-        border-radius: 22px;
-        box-shadow: 0 20px 40px rgba(0,0,0,0.4);
-        animation: fadeIn .9s ease-in-out;
-        border: 1px solid rgba(255,255,255,0.15);
+    .box {
+        width: 360px;
+        padding: 30px;
+        background: rgba(255,255,255,0.12);
+        backdrop-filter: blur(14px);
+        border-radius: 20px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        animation: fadeIn 1s ease;
     }
 
     @keyframes fadeIn {
-        from { opacity: 0; transform: scale(.92);}
-        to { opacity: 1; transform: scale(1);}
+        from { opacity: 0; transform: translateY(40px); }
+        to { opacity: 1; transform: translateY(0); }
     }
 
-    h2 {
+    h1 {
         text-align: center;
-        color: white;
         margin-bottom: 25px;
-        font-weight: 600;
         letter-spacing: 1px;
     }
 
     input {
         width: 100%;
         padding: 14px;
-        margin-bottom: 18px;
         border: none;
         border-radius: 12px;
-        background: rgba(255,255,255,0.15);
-        color: white;
+        margin-bottom: 18px;
         font-size: 15px;
         outline: none;
-        transition: .3s;
-    }
-
-    input:focus {
-        background: rgba(255,255,255,0.25);
-        transform: translateY(-2px);
+        background: rgba(255,255,255,0.18);
+        color: white;
     }
 
     button {
         width: 100%;
         padding: 14px;
-        background: linear-gradient(135deg,#21e6c1,#19c5a2);
         border: none;
-        border-radius: 14px;
+        border-radius: 12px;
+        background: #21e6c1;
         color: black;
-        font-size: 16px;
         font-weight: bold;
         cursor: pointer;
-        transition: .3s;
+        transition: 0.3s;
+        font-size: 16px;
     }
 
     button:hover {
+        background: #1dbda0;
         transform: scale(1.05);
-        background: linear-gradient(135deg,#19c5a2,#21e6c1);
     }
 </style>
 </head>
 
 <body>
-<div class="container">
-    <h2>AMR LAB</h2>
 
-    <input type="text" id="name" placeholder="Patient Name" />
-    <input type="number" id="id" placeholder="Patient ID" />
+<div class="box">
+    <h1>AMR LAB</h1>
+
+    <input type="text" id="name" placeholder="Enter Patient Name">
+    <input type="number" id="id" placeholder="Enter Patient ID">
 
     <button onclick="login()">View My Results</button>
 </div>
@@ -103,16 +94,27 @@ function login() {
     fetch("https://raw.githubusercontent.com/amrnader945-boop/team--work/main/data/patients.json")
         .then(res => res.json())
         .then(data => {
-            if (!data[id]) return alert("Wrong name or ID");
 
-            if (data[id].name.toLowerCase() === name.toLowerCase()) {
-                localStorage.setItem("patientData", JSON.stringify(data[id]));
-                window.location.href = "patient.html";
-            } else {
+            const patient = data[id];
+
+            if (!patient) {
                 alert("Wrong name or ID");
+                return;
             }
+
+            if (patient.name.toLowerCase() !== name.toLowerCase()) {
+                alert("Wrong name or ID");
+                return;
+            }
+
+            localStorage.setItem("patientData", JSON.stringify(patient));
+
+            window.location.href = "result.html?id=" + id;
         })
-        .catch(() => alert("Error loading data"));
+        .catch(err => {
+            console.error(err);
+            alert("Error loading data");
+        });
 }
 </script>
 
