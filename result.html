@@ -2,105 +2,147 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>AMR LAB — Patient Result</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AMR LAB — Results</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-body {
-    margin: 0;
-    height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background: linear-gradient(135deg, #05182F, #083B70, #0ABAB5);
-    font-family: 'Arial';
-}
+    body {
+        margin: 0;
+        font-family: Poppins, Arial, sans-serif;
+        background: linear-gradient(135deg,#0a1f33,#112d4e,#3f72af);
+        color: white;
+        padding: 0;
+    }
 
-.card {
-    width: 420px;
-    padding: 30px;
-    background: rgba(255,255,255,0.10);
-    border-radius: 18px;
-    backdrop-filter: blur(12px);
-    box-shadow: 0 8px 25px rgba(0,0,0,0.4);
-    color: white;
-    animation: fadeIn 0.9s ease;
-}
+    .container {
+        max-width: 500px;
+        margin: 60px auto;
+        background: rgba(255,255,255,0.12);
+        padding: 30px;
+        border-radius: 18px;
+        backdrop-filter: blur(12px);
+        box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+        animation: fadeIn 1s ease;
+    }
 
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(30px); }
-    to { opacity: 1; transform: translateY(0); }
-}
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(50px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
 
-.row {
-    display: flex;
-    justify-content: space-between;
-    padding: 8px 0;
-    border-bottom: 1px solid rgba(255,255,255,0.2);
-}
+    h2 {
+        text-align: center;
+        margin-bottom: 25px;
+        letter-spacing: 1px;
+        font-size: 26px;
+    }
 
-h1 {
-    text-align: center;
-    margin-bottom: 15px;
-}
+    .info p {
+        font-size: 17px;
+        margin: 6px 0;
+    }
 
+    .result-box {
+        margin-top: 20px;
+        padding: 20px;
+        background: rgba(255,255,255,0.15);
+        border-radius: 15px;
+    }
+
+    .result-box h3 {
+        margin-bottom: 15px;
+        font-size: 20px;
+    }
+
+    .result-item {
+        display: flex;
+        justify-content: space-between;
+        font-size: 18px;
+        margin: 8px 0;
+        padding-bottom: 8px;
+        border-bottom: 1px solid rgba(255,255,255,0.15);
+    }
+
+    button {
+        margin-top: 25px;
+        width: 100%;
+        padding: 12px;
+        border: none;
+        border-radius: 12px;
+        background: #21e6c1;
+        color: black;
+        font-size: 18px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+
+    button:hover {
+        background: #1dbda0;
+        transform: scale(1.05);
+    }
 </style>
 </head>
+
 <body>
 
-<div class="card" id="card" style="display:none;">
+<div class="container">
+    <h2>Patient Results</h2>
 
-    <h1 id="pname"></h1>
+    <div class="info">
+        <p><strong>Name:</strong> <span id="name"></span></p>
+        <p><strong>ID:</strong> <span id="id"></span></p>
+        <p><strong>Age:</strong> <span id="age"></span></p>
+        <p><strong>Gender:</strong> <span id="gender"></span></p>
+        <p><strong>Doctor:</strong> <span id="doctor"></span></p>
+        <p><strong>Email:</strong> <span id="email"></span></p>
+        <p><strong>Phone:</strong> <span id="phone"></span></p>
+    </div>
 
-    <div class="row"><span>ID</span><span id="pid"></span></div>
-    <div class="row"><span>Age</span><span id="age"></span></div>
-    <div class="row"><span>Gender</span><span id="gender"></span></div>
-    <div class="row"><span>Doctor</span><span id="doctor"></span></div>
-    <div class="row"><span>Phone</span><span id="phone"></span></div>
-    <div class="row"><span>Email</span><span id="email"></span></div>
+    <div class="result-box">
+        <h3>Lab Results</h3>
 
-    <h3 style="margin-top:20px;">Test Results</h3>
-    <div class="row"><span>ABS</span><span id="abs"></span></div>
-    <div class="row"><span>CONC</span><span id="conc"></span></div>
-    <div class="row"><span>TRANS</span><span id="trans"></span></div>
+        <div class="result-item">
+            <span>ABS</span>
+            <span id="abs"></span>
+        </div>
 
+        <div class="result-item">
+            <span>CONC</span>
+            <span id="conc"></span>
+        </div>
+
+        <div class="result-item">
+            <span>TRANS</span>
+            <span id="trans"></span>
+        </div>
+    </div>
+
+    <button onclick="window.location.href='index.html'">Back</button>
 </div>
 
 <script>
-(async () => {
-    const id = localStorage.getItem("patientID");
+    const urlParams = new URLSearchParams(window.location.search);
+    const id = urlParams.get("id");
 
-    if (!id) {
-        alert("No patient ID detected");
+    const patient = JSON.parse(localStorage.getItem("patientData"));
+
+    if (!patient) {
+        alert("No patient data found");
         window.location.href = "index.html";
-        return;
     }
 
-    const response = await fetch("data/patients.json");
-    const data = await response.json();
+    document.getElementById("name").textContent = patient.name;
+    document.getElementById("id").textContent = id;
+    document.getElementById("age").textContent = patient.age;
+    document.getElementById("gender").textContent = patient.gender;
+    document.getElementById("doctor").textContent = patient.doctor;
+    document.getElementById("email").textContent = patient.email;
+    document.getElementById("phone").textContent = patient.phone;
 
-    if (!data[id]) {
-        alert("Patient Not Found");
-        window.location.href = "index.html";
-        return;
-    }
-
-    const p = data[id];
-
-    document.getElementById("card").style.display = "block";
-
-    document.getElementById("pname").innerText = p.name;
-    document.getElementById("pid").innerText = id;
-    document.getElementById("age").innerText = p.age;
-    document.getElementById("gender").innerText = p.gender;
-    document.getElementById("doctor").innerText = p.doctor;
-    document.getElementById("phone").innerText = p.phone;
-    document.getElementById("email").innerText = p.email;
-
-    document.getElementById("abs").innerText = p.results.ABS;
-    document.getElementById("conc").innerText = p.results.CONC;
-    document.getElementById("trans").innerText = p.results.TRANS;
-})();
+    document.getElementById("abs").textContent = patient.results.ABS;
+    document.getElementById("conc").textContent = patient.results.CONC;
+    document.getElementById("trans").textContent = patient.results.TRANS;
 </script>
 
 </body>
