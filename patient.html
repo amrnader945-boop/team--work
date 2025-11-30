@@ -1,148 +1,106 @@
-<!DOCTYPE html>
+<!-- public/patient.html -->
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>AMR LAB — Patient Results</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<style>
-    body {
-        margin: 0;
-        font-family: Poppins, Arial, sans-serif;
-        background: linear-gradient(135deg, #00264d, #004d80, #0099cc);
-        min-height: 100vh;
-        color: white;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        padding: 30px;
-    }
-
-    .card {
-        width: 380px;
-        background: rgba(255,255,255,0.15);
-        backdrop-filter: blur(15px);
-        border-radius: 20px;
-        padding: 25px;
-        box-shadow: 0 10px 35px rgba(0,0,0,0.4);
-        animation: fadeIn 1s ease;
-    }
-
-    @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(40px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
-
-    h1 {
-        text-align: center;
-        font-size: 26px;
-        letter-spacing: 1px;
-        margin-bottom: 10px;
-    }
-
-    .section-title {
-        margin-top: 18px;
-        font-weight: bold;
-        font-size: 18px;
-        color: #21e6c1;
-    }
-
-    .row {
-        display: flex;
-        justify-content: space-between;
-        padding: 6px 0;
-        border-bottom: 1px solid rgba(255,255,255,0.25);
-    }
-
-    /* WhatsApp Button */
-    .whatsapp {
-        position: fixed;
-        right: 18px;
-        bottom: 18px;
-        background: #25D366;
-        border: none;
-        color: white;
-        font-size: 16px;
-        padding: 14px 18px;
-        border-radius: 50px;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        box-shadow: 0 6px 18px rgba(0,0,0,0.3);
-        transition: 0.3s;
-    }
-
-    .whatsapp:hover {
-        transform: scale(1.06);
-        background: #1ebe5d;
-    }
-</style>
+<link rel="stylesheet" href="style.css">
 </head>
-
 <body>
+  <div class="result-wrap">
+    <div class="result-card">
+      <h2 id="lab-title">AMR LAB - Patient Report</h2>
+      <div class="info">
+        <div><strong>ID:</strong> <span id="p-id"></span></div>
+        <div><strong>Name:</strong> <span id="p-name"></span></div>
+        <div><strong>Age:</strong> <span id="p-age"></span></div>
+        <div><strong>Gender:</strong> <span id="p-gender"></span></div>
+        <div><strong>Doctor:</strong> <span id="p-doctor"></span></div>
+        <div><strong>Phone:</strong> <span id="p-phone"></span></div>
+        <div><strong>Email:</strong> <span id="p-email"></span></div>
+      </div>
 
-<div class="card">
-    <h1>AMR LAB</h1>
+      <h3>Test Results</h3>
+      <table id="results-table">
+        <tr><td>ABS</td><td id="r-abs">--</td></tr>
+        <tr><td>CONC</td><td id="r-conc">--</td></tr>
+        <tr><td>TRANS</td><td id="r-trans">--</td></tr>
+      </table>
 
-    <div class="section-title">Patient Information</div>
-    <div class="row"><span>Name</span><span id="name">--</span></div>
-    <div class="row"><span>Age</span><span id="age">--</span></div>
-    <div class="row"><span>Gender</span><span id="gender">--</span></div>
-    <div class="row"><span>Doctor</span><span id="doctor">--</span></div>
-    <div class="row"><span>Phone</span><span id="phone">--</span></div>
-    <div class="row"><span>Email</span><span id="email">--</span></div>
-
-    <div class="section-title">Test Results</div>
-    <div class="row"><span>ABS</span><span id="abs">--</span></div>
-    <div class="row"><span>CONC</span><span id="conc">--</span></div>
-    <div class="row"><span>TRANS</span><span id="trans">--</span></div>
-</div>
-
-<button class="whatsapp" id="waBtn">
-    <img src="https://cdn-icons-png.flaticon.com/512/733/733585.png" width="22">
-    Send on WhatsApp
-</button>
+      <div class="actions">
+        <a id="whatsappBtn" class="btn whatsapp" target="_blank">Send Link via WhatsApp</a>
+        <button id="simulateButton" class="btn">Simulate Arduino Update</button>
+      </div>
+    </div>
+  </div>
 
 <script>
-// -------------------- LOAD PATIENT DATA --------------------
-const patient = JSON.parse(localStorage.getItem("patientData"));
+  // when page loads, try to get id from query or localStorage
+  const params = new URLSearchParams(location.search);
+  const id = params.get('id');
 
-if (!patient) {
-    alert("No patient data found. Please login again.");
-    window.location.href = "index.html";
-}
+  function showData(patientId, patient) {
+    document.getElementById('p-id').innerText = patientId;
+    document.getElementById('p-name').innerText = patient.name;
+    document.getElementById('p-age').innerText = patient.age;
+    document.getElementById('p-gender').innerText = patient.gender;
+    document.getElementById('p-doctor').innerText = patient.doctor;
+    document.getElementById('p-phone').innerText = patient.phone;
+    document.getElementById('p-email').innerText = patient.email;
+    const r = patient.results || {};
+    document.getElementById('r-abs').innerText = r.ABS ?? '--';
+    document.getElementById('r-conc').innerText = r.CONC ?? '--';
+    document.getElementById('r-trans').innerText = r.TRANS ?? '--';
 
-// Fill Data
-document.getElementById("name").innerText = patient.name;
-document.getElementById("age").innerText = patient.age;
-document.getElementById("gender").innerText = patient.gender;
-document.getElementById("doctor").innerText = patient.doctor;
-document.getElementById("phone").innerText = patient.phone;
-document.getElementById("email").innerText = patient.email;
+    // whatsapp button
+    const link = `${location.origin}/patient.html?id=${patientId}`;
+    document.getElementById('whatsappBtn').href = `https://wa.me/${patient.phone.replace('+','')}?text=${encodeURIComponent('Your results: '+link)}`;
+  }
 
-document.getElementById("abs").innerText = patient.results.ABS;
-document.getElementById("conc").innerText = patient.results.CONC;
-document.getElementById("trans").innerText = patient.results.TRANS;
+  if (id) {
+    fetch(`/patients/${id}`)
+      .then(r=>r.json()).then(json=>{
+        if (json.success) showData(id, json.patient);
+        else alert('Patient not found');
+      }).catch(e=>{ console.error(e); alert('Error loading'); });
+  } else {
+    // try from localStorage (login flow)
+    const raw = localStorage.getItem('patientData');
+    if (raw) {
+      const patient = JSON.parse(raw);
+      showData(patient.id || 'local', patient);
+    } else {
+      alert('No patient selected. Go to login page.');
+      window.location.href = '/';
+    }
+  }
 
-// -------------------- WHATSAPP BUTTON --------------------
-document.getElementById("waBtn").onclick = () => {
-    const link = "https://amrnader945-boop.github.io/team--work/";
+  // simulate Arduino: open a small POST to /arduino-update to update results
+  document.getElementById('simulateButton').addEventListener('click', () => {
+    const patientId = id || (JSON.parse(localStorage.getItem('patientData')||'{}').id);
+    if (!patientId) return alert('No patient ID');
 
-    const msg = 
-`Hello ${patient.name},
-Your lab results are ready.
+    const newResults = {
+      ABS: Math.floor(10 + Math.random()*10),
+      CONC: Math.floor(120 + Math.random()*80),
+      TRANS: Math.floor(15 + Math.random()*12)
+    };
 
-ABS: ${patient.results.ABS}
-CONC: ${patient.results.CONC}
-TRANS: ${patient.results.TRANS}
-
-View full report:
-${link}`;
-
-    window.open(`https://wa.me/${patient.phone}?text=${encodeURIComponent(msg)}`);
-};
+    fetch('/arduino-update', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ id: patientId, results: newResults })
+    })
+    .then(r=>r.json())
+    .then(j=>{
+      if (j.success) {
+        alert('Arduino update sent. WhatsApp (if configured) will be sent');
+        // refresh
+        location.reload();
+      } else alert('Update failed');
+    }).catch(e=>{ console.error(e); alert('Error'); });
+  });
 </script>
-
 </body>
 </html>
