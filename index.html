@@ -9,7 +9,7 @@
     body {
         margin: 0;
         font-family: Poppins, Arial, sans-serif;
-        background: linear-gradient(135deg,#071e3d,#1f4287,#278ea5);
+        background: linear-gradient(135deg, #001f3f, #003366, #005f99);
         height: 100vh;
         display: flex;
         justify-content: center;
@@ -20,7 +20,7 @@
     .box {
         width: 360px;
         padding: 30px;
-        background: rgba(255,255,255,0.12);
+        background: rgba(255,255,255,0.10);
         backdrop-filter: blur(14px);
         border-radius: 20px;
         box-shadow: 0 10px 40px rgba(0,0,0,0.3);
@@ -35,6 +35,8 @@
     h1 {
         text-align: center;
         margin-bottom: 25px;
+        font-size: 28px;
+        font-weight: 700;
         letter-spacing: 1px;
     }
 
@@ -48,6 +50,10 @@
         outline: none;
         background: rgba(255,255,255,0.18);
         color: white;
+    }
+
+    input::placeholder {
+        color: #d3d3d3;
     }
 
     button {
@@ -64,7 +70,7 @@
     }
 
     button:hover {
-        background: #1dbda0;
+        background: #18bfa0;
         transform: scale(1.05);
     }
 </style>
@@ -78,44 +84,51 @@
     <input type="text" id="name" placeholder="Enter Patient Name">
     <input type="number" id="id" placeholder="Enter Patient ID">
 
-    <button onclick="login()">View My Results</button>
+    <button id="loginBtn">View My Results</button>
 </div>
 
 <script>
-function login() {
+document.getElementById("loginBtn").addEventListener("click", function () {
+
     const name = document.getElementById("name").value.trim();
     const id = document.getElementById("id").value.trim();
 
     if (!name || !id) {
-        alert("Please fill both fields");
+        alert("⚠ Please enter both Name and ID");
         return;
     }
 
-    fetch("https://raw.githubusercontent.com/amrnader945-boop/team--work/main/data/patients.json")
-        .then(res => res.json())
+    fetch("https://amrnader945-boop.github.io/team--work/data/patients.json")
+        .then(response => response.json())
         .then(data => {
+
+            if (!data[id]) {
+                alert("❌ Incorrect Name or ID");
+                return;
+            }
 
             const patient = data[id];
 
-            if (!patient) {
-                alert("Wrong name or ID");
-                return;
+            // name check (case-insensitive)
+            if (patient.name.toLowerCase() === name.toLowerCase()) {
+
+                // Save patient data in browser
+                localStorage.setItem("patientData", JSON.stringify(patient));
+
+                // Redirect to patient page
+                window.location.href = "patient.html";
+
+            } else {
+                alert("❌ Incorrect Name or ID");
             }
 
-            if (patient.name.toLowerCase() !== name.toLowerCase()) {
-                alert("Wrong name or ID");
-                return;
-            }
-
-            localStorage.setItem("patientData", JSON.stringify(patient));
-
-            window.location.href = "result.html?id=" + id;
         })
         .catch(err => {
-            console.error(err);
-            alert("Error loading data");
+            console.error("Fetch Error:", err);
+            alert("⚠ Error loading patient data.");
         });
-}
+
+});
 </script>
 
 </body>
