@@ -6,7 +6,8 @@ function loadPatient() {
     const url = new URL(window.location.href);
     const pid = url.searchParams.get("id");
 
-    fetch(`/data/${pid}.json`)
+   fetch('patients.json')
+
         .then(res => res.json())
         .then(data => {
             get("id").innerText = data.id;
@@ -35,3 +36,4 @@ document.getElementById("sendWA").onclick = () => {
         "_blank"
     );
 };
+
