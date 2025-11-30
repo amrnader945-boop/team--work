@@ -52,9 +52,11 @@
 
 </div>
 
+
 <script>
+  // لو في ID في URL استعمله – لو مفيش خالص اعتمد على localStorage
   const params = new URLSearchParams(location.search);
-  const id = params.get("id");
+  let id = params.get("id");
 
   function showData(patientId, patient) {
     document.getElementById('p-id').innerText = patientId;
@@ -70,59 +72,72 @@
     document.getElementById('r-conc').innerText = r.CONC ?? "--";
     document.getElementById('r-trans').innerText = r.TRANS ?? "--";
 
-    // WhatsApp link
-    const link = `${location.origin}/patient.html?id=${patientId}`;
+    // WhatsApp
+    const link = `${location.origin}${location.pathname}?id=${patientId}`;
     document.getElementById("whatsappBtn").href =
       `https://wa.me/${patient.phone.replace('+','')}?text=` +
       encodeURIComponent(`Your results are ready:\n${link}`);
   }
 
-  // load patient
-  if (id) {
-    fetch(`/patients/${id}`)
-      .then(r => r.json())
-      .then(j => {
-        if (j.success) showData(id, j.patient);
-        else alert("Patient not found");
-      })
-      .catch(err => alert("Error loading data."));
+  function loadLocal() {
+    const saved = localStorage.getItem("patientData");
+    if (!saved) {
+      alert("No patient data available. Please login first.");
+      window.location.href = "index.html";
+      return;
+    }
+
+    const p = JSON.parse(saved);
+    id = p.id || "N/A";
+    showData(id, p);
+  }
+
+  // If running on GitHub Pages — ignore server API and use localStorage
+  if (location.hostname.includes("github.io")) {
+    loadLocal();
   } else {
-    const raw = localStorage.getItem("patientData");
-    if (raw) {
-      const p = JSON.parse(raw);
-      showData(p.id || "local", p);
+    // Running on local server
+    if (id) {
+      fetch(`/patients/${id}`)
+        .then(r => r.json())
+        .then(j => {
+          if (!j.success) return loadLocal();
+          showData(id, j.patient);
+        })
+        .catch(() => loadLocal());
     } else {
-      alert("No patient selected");
-      location.href = "/";
+      loadLocal();
     }
   }
 
-  // simulate Arduino POST
+  // Arduino Simulation
   document.getElementById("simulateButton").addEventListener("click", () => {
-    const patientId = id || JSON.parse(localStorage.getItem("patientData")||"{}").id;
-    if (!patientId) return alert("Missing ID");
+    const saved = JSON.parse(localStorage.getItem("patientData") || "{}");
+    const patientId = id || saved.id;
+    if (!patientId) return alert("Missing Patient ID");
 
     const newResults = {
       ABS: Math.floor(10 + Math.random()*20),
-      CONC: Math.floor(120 + Math.random()*90),
+      CONC: Math.floor(120 + Math.random()*80),
       TRANS: Math.floor(10 + Math.random()*10)
     };
 
     fetch("/arduino-update", {
       method: "POST",
-      headers: {"Content-Type":"application/json"},
+      headers: {"Content-Type": "application/json"},
       body: JSON.stringify({ id: patientId, results: newResults })
     })
     .then(r => r.json())
     .then(j => {
       if (j.success) {
-        alert("Arduino update sent successfully!");
+        alert("Arduino update received!");
         location.reload();
       } else alert("Update failed");
     })
-    .catch(e => alert("Connection error"));
+    .catch(() => alert("Server error. This only works on localhost."));
   });
 </script>
 
+ 
 </body>
 </html>
