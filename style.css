@@ -1,106 +1,81 @@
-/* Global */
-body.patient-body {
-  margin: 0;
-  font-family: "Poppins", sans-serif;
-  background: radial-gradient(circle at top, #0d1b2a, #000814);
-  color: white;
+/* style.css — simple unified look */
+
+:root{
+  --bg1:#001f3f;
+  --bg2:#003366;
+  --accent:#21e6c1;
+  --muted:rgba(255,255,255,0.12);
+  --danger:#ff5757;
 }
 
-/* Container */
-.report-container {
-  max-width: 700px;
-  margin: 40px auto;
-  padding: 20px;
-  animation: fadeIn 1s ease;
+*{box-sizing:border-box;font-family:Poppins,Arial,sans-serif}
+body{
+  margin:0;
+  min-height:100vh;
+  background:linear-gradient(135deg,var(--bg1),var(--bg2),#005f99);
+  color:#fff;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
 }
 
-/* Cards */
-.card {
-  background: rgba(255,255,255,0.1);
-  backdrop-filter: blur(12px);
-  padding: 25px;
-  margin-bottom: 25px;
-  border-radius: 18px;
-  box-shadow: 0 12px 35px rgba(0,0,0,0.35);
-  animation: slideUp 1s ease;
+/* center login box */
+.center-box{
+  width:360px;
+  background: rgba(255,255,255,0.08);
+  padding:28px;
+  border-radius:16px;
+  box-shadow:0 10px 40px rgba(0,0,0,0.35);
+  text-align:center;
 }
+.center-box h1{margin:0 0 18px 0;font-size:28px}
+.center-box input{
+  width:100%;padding:12px;border-radius:10px;border: none;margin:8px 0;background:var(--muted);color:#fff;outline:none;
+}
+.btn{
+  display:inline-block;padding:12px 14px;border-radius:10px;border:none;cursor:pointer;margin-top:10px;font-weight:600;
+  background:var(--accent);color:#000;width:100%;
+}
+.btn.ghost{background:transparent;border:1px solid rgba(255,255,255,0.08);color:#fff}
+.btn.whatsapp{background:#25D366;color:#000}
+.btn.primary{background:var(--accent);color:#000}
 
-.header-card h1 {
-  margin: 0;
-  font-size: 30px;
-  text-align: center;
-}
+/* report layout */
+.report{width:920px;max-width:96%}
+.card{background:rgba(255,255,255,0.05);padding:16px;border-radius:10px;margin-bottom:12px;box-shadow:0 6px 18px rgba(0,0,0,0.2)}
+.header{text-align:center}
+.patient-info{display:grid;grid-template-columns:repeat(3,1fr);gap:8px 18px}
+.results table{width:100%;border-collapse:collapse}
+.results th,.results td{padding:10px;border-bottom:1px solid rgba(255,255,255,0.06);text-align:left}
 
-.header-card p {
-  text-align: center;
-  opacity: 0.7;
-}
+/* actions */
+.actions{margin-top:6px}
 
-.patient-card h2, .results-card h2 {
-  margin-top: 0;
+/* floating serial button (top-right fixed) */
+#serial-floating{
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  z-index: 9999;
 }
+.serial-btn{
+  background:#ffcf33;
+  color:#000;
+  padding:10px 12px;
+  border-radius:10px;
+  box-shadow:0 6px 18px rgba(0,0,0,0.25);
+  cursor:pointer;
+  display:flex;
+  gap:8px;
+  align-items:center;
+}
+.serial-badge{background:#fff;padding:4px 7px;border-radius:999px;font-weight:700}
+.serial-small{font-size:14px}
 
-.info-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-}
-
-/* Results Table */
-.results-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 15px;
-}
-
-.results-table th {
-  background: rgba(0,0,0,0.4);
-  padding: 10px;
-}
-.results-table td {
-  padding: 10px;
-  border-bottom: 1px solid rgba(255,255,255,0.15);
-}
-
-/* Buttons */
-.actions {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 20px;
-}
-
-.btn {
-  padding: 12px 18px;
-  font-size: 15px;
-  border-radius: 10px;
-  border: none;
-  cursor: pointer;
-  text-decoration: none;
-  color: white;
-  font-weight: 600;
-  transition: 0.3s;
-}
-
-.btn.whatsapp {
-  background: #25D366;
-}
-
-.btn.simulate {
-  background: #0077ff;
-}
-
-.btn:hover {
-  transform: scale(1.05);
-  opacity: 0.9;
-}
-
-/* Animations */
-@keyframes fadeIn {
-  from { opacity: 0 }
-  to { opacity: 1 }
-}
-
-@keyframes slideUp {
-  from { transform: translateY(25px); opacity: 0 }
-  to { transform: translateY(0); opacity: 1 }
+/* responsive */
+@media (max-width:720px){
+  .patient-info{grid-template-columns:repeat(2,1fr)}
+  .center-box{width:92%}
+  .report{width:96%}
 }
