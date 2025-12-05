@@ -1,137 +1,147 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
+<meta charset="UTF-8">
 <title>AMR LAB — Patient Report</title>
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<link rel="stylesheet" href="style.css" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="style.css">
+
+<style>
+body {
+    font-family: Poppins, Arial;
+    margin: 0;
+    background: #f5f7fa;
+}
+
+.container {
+    width: 90%;
+    margin: auto;
+    padding: 20px;
+}
+
+.box {
+    background: white;
+    padding: 25px;
+    border-radius: 16px;
+    margin-bottom: 25px;
+    box-shadow: 0 4px 25px rgba(0,0,0,0.1);
+}
+
+h2 {
+    margin-top: 0;
+    color: #003366;
+}
+
+.label {
+    font-weight: bold;
+}
+
+.result-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+}
+
+.result-table th, .result-table td {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+}
+
+.whatsapp {
+    background: #25D366;
+    color: white;
+    border: none;
+    padding: 12px 22px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+}
+</style>
 </head>
+
 <body>
 
-<div class="report">
-  <div class="card header">
-    <h1>🧪 AMR LAB</h1>
-    <p>Patient Laboratory Report</p>
-  </div>
+<div class="container">
 
-  <div class="card patient-info">
-    <div><strong>ID:</strong> <span id="p-id">--</span></div>
-    <div><strong>Name:</strong> <span id="p-name">--</span></div>
-    <div><strong>Age:</strong> <span id="p-age">--</span></div>
-    <div><strong>Gender:</strong> <span id="p-gender">--</span></div>
-    <div><strong>Phone:</strong> <span id="p-phone">--</span></div>
-    <div><strong>Email:</strong> <span id="p-email">--</span></div>
-  </div>
-
-  <div class="card results">
-    <h3>Test Results</h3>
-    <table>
-      <tr><th>Test</th><th>Value</th></tr>
-      <tr><td>ABS</td><td id="r-abs">--</td></tr>
-      <tr><td>CONC</td><td id="r-conc">--</td></tr>
-      <tr><td>TRANS</td><td id="r-trans">--</td></tr>
-    </table>
-  </div>
-
-  <div class="actions">
-    <a id="whatsappBtn" class="btn whatsapp" target="_blank">📩 Send via WhatsApp</a>
-    <button id="simulateButton" class="btn">⚙️ Simulate Update</button>
-
-    <div style="margin-top:12px;">
-      <button id="onBtn" class="btn">ON</button>
-      <button id="offBtn" class="btn">OFF</button>
-      <button id="backBtn" class="btn ghost">⬅ Back</button>
+    <div class="box">
+        <h2>🧪 AMR LAB</h2>
+        <p>Patient Laboratory Report</p>
     </div>
 
-    <div class="status-line">
-      Serial: <span id="connStatus">unknown</span>
+    <div class="box">
+        <h3>Patient Information</h3>
+        <p><span class="label">ID:</span> <span id="p-id">--</span></p>
+        <p><span class="label">Name:</span> <span id="p-name">--</span></p>
+        <p><span class="label">Age:</span> <span id="p-age">--</span></p>
+        <p><span class="label">Gender:</span> <span id="p-gender">--</span></p>
+        <p><span class="label">Phone:</span> <span id="p-phone">--</span></p>
+        <p><span class="label">Email:</span> <span id="p-email">--</span></p>
     </div>
-  </div>
+
+    <div class="box">
+        <h3>Test Results</h3>
+        <table class="result-table">
+            <tr>
+                <th>Test</th>
+                <th>Value</th>
+            </tr>
+            <tr>
+                <td>ABS</td>
+                <td id="r-abs">--</td>
+            </tr>
+            <tr>
+                <td>CONC</td>
+                <td id="r-conc">--</td>
+            </tr>
+            <tr>
+                <td>TRANS</td>
+                <td id="r-trans">--</td>
+            </tr>
+        </table>
+    </div>
+
+    <button class="whatsapp" id="sendWA">📄 Send via WhatsApp</button>
+
 </div>
 
-<!-- floating connect button + shared script -->
-<div id="serial-floating"></div>
-<script src="script.js"></script>
 <script>
-initSerialFloating(); // show floating button and set handlers
+    // load patient data
+    const patient = JSON.parse(localStorage.getItem("patientData"));
 
-// load patient data
-const params = new URLSearchParams(location.search);
-let id = params.get('id');
-
-function showData(pid, patient) {
-  document.getElementById('p-id').innerText = pid;
-  document.getElementById('p-name').innerText = patient.name || '--';
-  document.getElementById('p-age').innerText = patient.age || '--';
-  document.getElementById('p-gender').innerText = patient.gender || '--';
-  document.getElementById('p-phone').innerText = patient.phone || '--';
-  document.getElementById('p-email').innerText = patient.email || '--';
-  const r = patient.results || {};
-  document.getElementById('r-abs').innerText = r.ABS ?? '--';
-  document.getElementById('r-conc').innerText = r.CONC ?? '--';
-  document.getElementById('r-trans').innerText = r.TRANS ?? '--';
-  // whatsapp link
-  const link = `${location.origin}${location.pathname}?id=${pid}`;
-  document.getElementById('whatsappBtn').href = `https://wa.me/${(patient.phone||'').replace('+','')}?text=${encodeURIComponent('Your results are ready:\\n'+link)}`;
-}
-
-// try server first (if hosted), else localStorage
-if (location.hostname.includes('github.io')) {
-  const saved = localStorage.getItem('patientData');
-  if (!saved) { alert('No patient data. Please login.'); window.location.href='index.html'; }
-  const p = JSON.parse(saved); id = id || p.id; showData(id, p);
-} else {
-  fetch(`/patients/${id}`).then(r=>r.json()).then(j=>{
-    if (j.success) showData(id, j.patient);
-    else {
-      const saved = JSON.parse(localStorage.getItem('patientData')||'{}');
-      if (!saved.id) { alert('No patient data.'); window.location.href='index.html'; }
-      showData(saved.id, saved);
+    if (!patient) {
+        alert("No patient data found!");
+        window.location.href = "index.html";
     }
-  }).catch(()=> {
-    const saved = JSON.parse(localStorage.getItem('patientData')||'{}');
-    if (!saved.id) { alert('No patient data.'); window.location.href='index.html'; }
-    showData(saved.id, saved);
-  });
-}
 
-// buttons
-document.getElementById('backBtn').addEventListener('click', ()=>window.history.back());
+    // fill patient info
+    document.getElementById("p-id").textContent = patient.id;
+    document.getElementById("p-name").textContent = patient.name;
+    document.getElementById("p-age").textContent = patient.age;
+    document.getElementById("p-gender").textContent = patient.gender;
+    document.getElementById("p-phone").textContent = patient.phone;
+    document.getElementById("p-email").textContent = patient.email;
 
-document.getElementById('simulateButton').addEventListener('click', ()=> {
-  const newResults = {
-    ABS: Math.floor(10 + Math.random()*20),
-    CONC: Math.floor(120 + Math.random()*80),
-    TRANS: Math.floor(10 + Math.random()*10)
-  };
-  // update localStorage and UI
-  const saved = JSON.parse(localStorage.getItem('patientData')||'{}');
-  saved.results = newResults;
-  localStorage.setItem('patientData', JSON.stringify(saved));
-  showData(saved.id || id, saved);
-  alert('Simulated update applied locally.');
-});
+    // fill results
+    document.getElementById("r-abs").textContent = patient.ABS;
+    document.getElementById("r-conc").textContent = patient.CONC;
+    document.getElementById("r-trans").textContent = patient.TRANS;
 
-// ON / OFF send via serial (if connected)
-document.getElementById('onBtn').addEventListener('click', async ()=> {
-  try {
-    await serialWrite('1');
-    alert('Sent ON (1) to Arduino');
-  } catch(e) { alert('Send failed: '+e.message); }
-});
-document.getElementById('offBtn').addEventListener('click', async ()=> {
-  try {
-    await serialWrite('0');
-    alert('Sent OFF (0) to Arduino');
-  } catch(e) { alert('Send failed: '+e.message); }
-});
+    // WhatsApp button
+    document.getElementById("sendWA").addEventListener("click", () => {
+        const msg =
+            `AMR LAB REPORT\n\n` +
+            `ID: ${patient.id}\n` +
+            `Name: ${patient.name}\n` +
+            `Age: ${patient.age}\n` +
+            `Gender: ${patient.gender}\n\n` +
+            `ABS: ${patient.ABS}\n` +
+            `CONC: ${patient.CONC}\n` +
+            `TRANS: ${patient.TRANS}`;
 
-// update connection status badge periodically
-setInterval(()=> {
-  const st = serialIsOpen() ? `connected (${serialInfo().path || 'open'})` : 'not connected';
-  const el = document.getElementById('connStatus');
-  if (el) el.innerText = st;
-}, 900);
+        window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`);
+    });
 </script>
+
 </body>
 </html>
