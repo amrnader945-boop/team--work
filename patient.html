@@ -1,145 +1,177 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>AMR LAB — Patient Report</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <title>AMR LAB — Patient Report</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            background: #f5f7fa;
+            color: #333;
+        }
 
-<style>
-body {
-    font-family: Poppins, Arial;
-    margin: 0;
-    background: #f5f7fa;
-}
+        .container {
+            width: 90%;
+            max-width: 600px; /* Limits width on big screens */
+            margin: 40px auto;
+        }
 
-.container {
-    width: 90%;
-    margin: auto;
-    padding: 20px;
-}
+        .box {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            border: 1px solid #eee;
+        }
 
-.box {
-    background: white;
-    padding: 25px;
-    border-radius: 16px;
-    margin-bottom: 25px;
-    box-shadow: 0 4px 25px rgba(0,0,0,0.1);
-}
+        h2 { margin: 0; color: #003366; }
+        p { margin: 5px 0; }
+        
+        h3 { 
+            border-bottom: 2px solid #f0f0f0; 
+            padding-bottom: 10px; 
+            margin-top: 0; 
+            color: #444; 
+        }
 
-h2 {
-    margin-top: 0;
-    color: #003366;
-}
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            border-bottom: 1px dashed #eee;
+            padding-bottom: 5px;
+        }
 
-.label {
-    font-weight: bold;
-}
+        .label { font-weight: 600; color: #555; }
+        .value { font-weight: 400; color: #000; }
 
-.result-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 15px;
-}
+        .result-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        .result-table th { text-align: left; background: #f4f6f8; padding: 10px; color: #555; }
+        .result-table td { padding: 10px; border-bottom: 1px solid #eee; }
+        .result-table td:last-child { font-weight: bold; color: #003366; }
 
-.result-table th, .result-table td {
-    padding: 10px;
-    border-bottom: 1px solid #ddd;
-}
+        /* Button Group */
+        .btn-group { display: flex; gap: 10px; margin-top: 20px; }
+        
+        .btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: 0.2s;
+            font-family: 'Poppins', sans-serif;
+        }
 
-.whatsapp {
-    background: #25D366;
-    color: white;
-    border: none;
-    padding: 12px 22px;
-    border-radius: 10px;
-    cursor: pointer;
-    font-size: 16px;
-    font-weight: bold;
-}
-</style>
+        .whatsapp { background: #25D366; color: white; }
+        .whatsapp:hover { background: #1ebc57; }
+
+        .print-btn { background: #003366; color: white; }
+        .print-btn:hover { background: #002244; }
+
+        /* 2. PRINT STYLES: This runs only when you press Print */
+        @media print {
+            body { background: white; }
+            .container { width: 100%; max-width: 100%; margin: 0; }
+            .box { box-shadow: none; border: none; padding: 0; margin-bottom: 30px; }
+            .btn-group { display: none !important; } /* Hides buttons on paper */
+            h3 { border-bottom: 2px solid #000; }
+        }
+    </style>
 </head>
 
 <body>
 
 <div class="container">
 
-    <div class="box">
+    <div class="box" style="text-align: center;">
         <h2>🧪 AMR LAB</h2>
-        <p>Patient Laboratory Report</p>
+        <p style="color: #666;">Official Laboratory Report</p>
     </div>
 
     <div class="box">
         <h3>Patient Information</h3>
-        <p><span class="label">ID:</span> <span id="p-id">--</span></p>
-        <p><span class="label">Name:</span> <span id="p-name">--</span></p>
-        <p><span class="label">Age:</span> <span id="p-age">--</span></p>
-        <p><span class="label">Gender:</span> <span id="p-gender">--</span></p>
-        <p><span class="label">Phone:</span> <span id="p-phone">--</span></p>
-        <p><span class="label">Email:</span> <span id="p-email">--</span></p>
+        <div class="info-row"><span class="label">ID:</span> <span class="value" id="p-id">--</span></div>
+        <div class="info-row"><span class="label">Name:</span> <span class="value" id="p-name">--</span></div>
+        <div class="info-row"><span class="label">Age:</span> <span class="value" id="p-age">--</span></div>
+        <div class="info-row"><span class="label">Gender:</span> <span class="value" id="p-gender">--</span></div>
+        <div class="info-row"><span class="label">Phone:</span> <span class="value" id="p-phone">--</span></div>
+        <div class="info-row"><span class="label">Email:</span> <span class="value" id="p-email">--</span></div>
+        <div class="info-row"><span class="label">Date:</span> <span class="value" id="report-date">--</span></div>
     </div>
 
     <div class="box">
         <h3>Test Results</h3>
         <table class="result-table">
-            <tr>
-                <th>Test</th>
-                <th>Value</th>
-            </tr>
-            <tr>
-                <td>ABS</td>
-                <td id="r-abs">--</td>
-            </tr>
-            <tr>
-                <td>CONC</td>
-                <td id="r-conc">--</td>
-            </tr>
-            <tr>
-                <td>TRANS</td>
-                <td id="r-trans">--</td>
-            </tr>
+            <thead>
+                <tr>
+                    <th>Test Parameter</th>
+                    <th>Result Value</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td>ABS (Absorbance)</td><td id="r-abs">--</td></tr>
+                <tr><td>CONC (Concentration)</td><td id="r-conc">--</td></tr>
+                <tr><td>TRANS (Transmission)</td><td id="r-trans">--</td></tr>
+            </tbody>
         </table>
     </div>
 
-    <button class="whatsapp" id="sendWA">📄 Send via WhatsApp</button>
+    <div class="btn-group">
+        <button class="btn print-btn" onclick="window.print()">🖨️ Print Report</button>
+        <button class="btn whatsapp" id="sendWA">💬 WhatsApp</button>
+    </div>
 
 </div>
 
 <script>
-    // load patient data
+    // 1. Set Today's Date
+    document.getElementById("report-date").textContent = new Date().toLocaleDateString();
+
+    // 2. Load Data
     const patient = JSON.parse(localStorage.getItem("patientData"));
 
+    // 3. Validation
     if (!patient) {
-        alert("No patient data found!");
+        alert("No patient data found! Redirecting to input...");
         window.location.href = "index.html";
     }
 
-    // fill patient info
-    document.getElementById("p-id").textContent = patient.id;
-    document.getElementById("p-name").textContent = patient.name;
-    document.getElementById("p-age").textContent = patient.age;
-    document.getElementById("p-gender").textContent = patient.gender;
-    document.getElementById("p-phone").textContent = patient.phone;
-    document.getElementById("p-email").textContent = patient.email;
+    // 4. Fill Info (Using || "" to prevent 'undefined' showing on screen)
+    document.getElementById("p-id").textContent = patient.id || "-";
+    document.getElementById("p-name").textContent = patient.name || "-";
+    document.getElementById("p-age").textContent = patient.age || "-";
+    document.getElementById("p-gender").textContent = patient.gender || "-";
+    document.getElementById("p-phone").textContent = patient.phone || "-";
+    document.getElementById("p-email").textContent = patient.email || "-";
 
-    // fill results
-    document.getElementById("r-abs").textContent = patient.ABS;
-    document.getElementById("r-conc").textContent = patient.CONC;
-    document.getElementById("r-trans").textContent = patient.TRANS;
+    // Fill Results
+    document.getElementById("r-abs").textContent = patient.ABS || "0.00";
+    document.getElementById("r-conc").textContent = patient.CONC || "0.00";
+    document.getElementById("r-trans").textContent = patient.TRANS || "0.00";
 
-    // WhatsApp button
+    // 5. WhatsApp Logic (Added * for Bolding in WhatsApp)
     document.getElementById("sendWA").addEventListener("click", () => {
-        const msg =
-            `AMR LAB REPORT\n\n` +
-            `ID: ${patient.id}\n` +
-            `Name: ${patient.name}\n` +
-            `Age: ${patient.age}\n` +
-            `Gender: ${patient.gender}\n\n` +
-            `ABS: ${patient.ABS}\n` +
-            `CONC: ${patient.CONC}\n` +
-            `TRANS: ${patient.TRANS}`;
+        const msg = 
+            `*🧪 AMR LAB REPORT*\n` +
+            `------------------\n` +
+            `👤 Name: ${patient.name}\n` +
+            `🆔 ID: ${patient.id}\n` +
+            `📅 Date: ${new Date().toLocaleDateString()}\n\n` +
+            `*RESULTS:*\n` +
+            `🔹 ABS: ${patient.ABS}\n` +
+            `🔹 CONC: ${patient.CONC}\n` +
+            `🔹 TRANS: ${patient.TRANS}\n\n` +
+            `_Thank you for trusting AMR Lab._`;
 
-        window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`);
+        window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
     });
 </script>
 
