@@ -1,58 +1,168 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>AMR LAB — Add Patient</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <title>AMR LAB — Patient Report</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body { font-family: 'Poppins', sans-serif; margin: 0; background: #f5f7fa; color: #333; }
+        .container { width: 90%; max-width: 600px; margin: 40px auto; } /* Added max-width */
+        
+        .box { 
+            background: white; 
+            padding: 25px; 
+            border-radius: 16px; 
+            margin-bottom: 25px; 
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08); 
+        }
+        
+        h2 { margin: 0 0 5px 0; color: #003366; }
+        h3 { border-bottom: 2px solid #f0f0f0; padding-bottom: 10px; margin-top: 0; color: #444; }
+        
+        .sub-text { color: #666; margin: 0; font-size: 0.9rem; }
 
-<style>
-body { font-family: Poppins, Arial; background: #eef2f7; padding: 30px; }
-.box { background: white; padding: 25px; border-radius: 16px; margin-bottom: 25px; box-shadow: 0 4px 25px rgba(0,0,0,0.1); }
-input { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: 1px solid #bbb; font-size: 16px; }
-button { width: 100%; padding: 15px; border: none; border-radius: 10px; background: #003366; color: white; font-size: 18px; cursor: pointer; }
-button:hover { background:#002244; }
-</style>
+        .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; } /* Grid for better layout */
+        .info-item { margin-bottom: 8px; }
+        .label { font-weight: bold; color: #555; display: block; font-size: 0.85rem; }
+        .value { font-size: 1rem; }
+
+        .result-table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        .result-table th { text-align: left; background: #f8f9fa; color: #555; padding: 12px; }
+        .result-table td { padding: 12px; border-bottom: 1px solid #eee; }
+        .result-table tr:last-child td { border-bottom: none; }
+
+        /* Action Buttons */
+        .actions { display: flex; gap: 10px; margin-top: 20px; }
+        .btn { flex: 1; padding: 12px; border: none; border-radius: 10px; cursor: pointer; font-size: 16px; font-weight: bold; transition: 0.2s; }
+        
+        .whatsapp { background: #25D366; color: white; }
+        .whatsapp:hover { background: #1ebc57; }
+        
+        .print-btn { background: #003366; color: white; }
+        .print-btn:hover { background: #002244; }
+
+        /* Print Styles: Hides buttons when printing */
+        @media print {
+            body { background: white; }
+            .container { width: 100%; max-width: 100%; margin: 0; }
+            .box { box-shadow: none; border: 1px solid #ddd; }
+            .actions { display: none !important; }
+        }
+    </style>
 </head>
-
 <body>
 
-<div class="box">
-    <h2>🧪 AMR LAB — Add Patient</h2>
+<div class="container">
+    <div class="box" style="text-align: center;">
+        <h2>🧪 AMR LAB</h2>
+        <p class="sub-text">Official Laboratory Report</p>
+    </div>
 
-    <input id="id" placeholder="Patient ID">
-    <input id="name" placeholder="Name">
-    <input id="age" placeholder="Age">
-    <input id="gender" placeholder="Gender">
-    <input id="phone" placeholder="Phone">
-    <input id="email" placeholder="Email">
+    <div class="box">
+        <h3>Patient Information</h3>
+        <div class="info-grid">
+            <div class="info-item"><span class="label">Patient ID:</span> <span class="value" id="p-id">--</span></div>
+            <div class="info-item"><span class="label">Full Name:</span> <span class="value" id="p-name">--</span></div>
+            <div class="info-item"><span class="label">Age:</span> <span class="value" id="p-age">--</span></div>
+            <div class="info-item"><span class="label">Gender:</span> <span class="value" id="p-gender">--</span></div>
+            <div class="info-item"><span class="label">Phone:</span> <span class="value" id="p-phone">--</span></div>
+            <div class="info-item"><span class="label">Date:</span> <span class="value" id="report-date">--</span></div>
+        </div>
+    </div>
 
-    <h3>Test Results</h3>
-    <input id="ABS" placeholder="ABS Result">
-    <input id="CONC" placeholder="CONC Result">
-    <input id="TRANS" placeholder="TRANS Result">
+    <div class="box">
+        <h3>Test Results</h3>
+        <table class="result-table">
+            <thead>
+                <tr>
+                    <th>Test Parameter</th>
+                    <th>Result Value</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>ABS</strong> (Absorbance)</td>
+                    <td id="r-abs">--</td>
+                </tr>
+                <tr>
+                    <td><strong>CONC</strong> (Concentration)</td>
+                    <td id="r-conc">--</td>
+                </tr>
+                <tr>
+                    <td><strong>TRANS</strong> (Transmission)</td>
+                    <td id="r-trans">--</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
 
-    <button onclick="saveData()">Generate Report</button>
+    <div class="actions">
+        <button class="btn print-btn" onclick="window.print()">🖨️ Print / PDF</button>
+        <button class="btn whatsapp" id="sendWA">💬 WhatsApp</button>
+    </div>
 </div>
 
 <script>
-function saveData() {
+    // 1. Get current date for the report
+    document.getElementById("report-date").textContent = new Date().toLocaleDateString();
 
-    const patient = {
-        id: document.getElementById("id").value,
-        name: document.getElementById("name").value,
-        age: document.getElementById("age").value,
-        gender: document.getElementById("gender").value,
-        phone: document.getElementById("phone").value,
-        email: document.getElementById("email").value,
-        ABS: document.getElementById("ABS").value,
-        CONC: document.getElementById("CONC").value,
-        TRANS: document.getElementById("TRANS").value
-    };
+    // 2. Load patient data
+    const patient = JSON.parse(localStorage.getItem("patientData"));
 
-    localStorage.setItem("patientData", JSON.stringify(patient));
+    // 3. Validation: Check if data exists
+    if (!patient) {
+        // In a real app, un-comment the line below to redirect
+        // window.location.href = "index.html"; 
+        
+        // For testing purposes, we use dummy data if no localStorage is found
+        console.warn("No data found, using dummy data for display.");
+        var dummyData = {
+            id: "1024", name: "John Doe", age: 30, gender: "Male", 
+            phone: "1234567890", email: "john@test.com",
+            ABS: "0.450", CONC: "12.5 mg/dL", TRANS: "98%"
+        };
+        // Use dummy data if patient is null
+        var pData = patient || dummyData;
+    } else {
+        var pData = patient;
+    }
 
-    window.location.href = "report.html";
-}
+    // 4. Populate DOM (using || to handle undefined values safely)
+    document.getElementById("p-id").textContent = pData.id || '--';
+    document.getElementById("p-name").textContent = pData.name || '--';
+    document.getElementById("p-age").textContent = pData.age || '--';
+    document.getElementById("p-gender").textContent = pData.gender || '--';
+    document.getElementById("p-phone").textContent = pData.phone || '--';
+    
+    document.getElementById("r-abs").textContent = pData.ABS || '--';
+    document.getElementById("r-conc").textContent = pData.CONC || '--';
+    document.getElementById("r-trans").textContent = pData.TRANS || '--';
+
+    // 5. WhatsApp Logic
+    document.getElementById("sendWA").addEventListener("click", () => {
+        // THE FIX: Used backticks (`) for template literals
+        const msg = `*AMR LAB REPORT*\n` +
+                    `------------------\n` +
+                    `👤 Name: ${pData.name}\n` +
+                    `🆔 ID: ${pData.id}\n` +
+                    `📅 Date: ${new Date().toLocaleDateString()}\n\n` +
+                    `*RESULTS:*\n` +
+                    `🔹 ABS: ${pData.ABS}\n` +
+                    `🔹 CONC: ${pData.CONC}\n` +
+                    `🔹 TRANS: ${pData.TRANS}\n\n` +
+                    `Thank you for choosing AMR Lab.`;
+
+        // Encode the string for URL
+        const encodedMsg = encodeURIComponent(msg);
+        
+        // Option 1: Send to the specific patient (requires international format like 201xxxxxxxxx)
+        // const url = `https://wa.me/${pData.phone}?text=${encodedMsg}`;
+        
+        // Option 2: Open generic picker (safer if phone number format is uncertain)
+        const url = `https://wa.me/?text=${encodedMsg}`;
+
+        window.open(url, '_blank');
+    });
 </script>
 
 </body>
